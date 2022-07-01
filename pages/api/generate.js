@@ -6,23 +6,24 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 export default async function (req, res) {
+  console.log("Body: ", generatePrompt(req.body.style));
   const completion = await openai.createCompletion({
     model: "text-davinci-002",
-    prompt: generatePrompt(req.body.animal),
-    temperature: 0.6,
+    prompt: generatePrompt(req.body.style),
+    temperature: 0.3,
+    max_tokens: 400,
   });
   res.status(200).json({ result: completion.data.choices[0].text });
 }
 
-function generatePrompt(animal) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
+function generatePrompt(style) {
+  const capitalizedStyle =
+    style[0].toUpperCase() + style.slice(1).toLowerCase();
+  return `
+  Write a beer recipe of ${capitalizedStyle} style
+  (we don't use Irish Moss for hazy styles)
+  Total grain weight should not exceed 3.3 Kilograms
+  Batch Size: 1.5 gallons
+  Efficiency: 70%
+  Ingredients (All grain):`;
 }
